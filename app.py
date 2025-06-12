@@ -3,7 +3,6 @@ from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from rich.console import Console
 from aiohttp import web
-import asyncio
 import os
 import json
 
@@ -62,6 +61,7 @@ async def offer(request):
     @peer_connection.on('datachannel')
     def on_data_channel(channel):
         console.log(f"Data channel created: {channel.label}")
+        channel.send("Hello from server!")
 
         @channel.on('message')
         def on_message(message):
