@@ -41,9 +41,9 @@ function sendMessage(message) {
 
     if (channel && channel.readyState === 'open' && !sendButton.disabled) {
         channel.send(message);
-        log("Mensaje enviado:", message);
+        log("📤 Mensaje enviado:", message);
     } else {
-        log("El canal de datos no está abierto o el botón está deshabilitado");
+        log("⚠️ El canal de datos no está abierto o el botón está deshabilitado");
     }
 }
 
@@ -67,7 +67,7 @@ document.getElementById("message").addEventListener("keypress", (event) => {
 
 async function createPeerConnection() {
     //1. Crear la conexión RTCPeerConnection y el canal de datos
-    log("1. Iniciando conexión WebRTC 🚀");
+    log("🚀 1. Iniciando conexión WebRTC");
 
     peerConnection = new RTCPeerConnection({
         iceServers: [
@@ -79,7 +79,7 @@ async function createPeerConnection() {
 
     //2. Configurar el evento onopen del canal de datos
     dataChannel.onopen = () => {
-        log("Canal de datos abierto");
+        log("🟢 Canal de datos abierto");
         // Habilitar el botón de envío cuando el canal esté abierto
         document.getElementById("send").disabled = false;
     };
@@ -87,19 +87,19 @@ async function createPeerConnection() {
     //3. Configurar el evento onmessage del canal de datos
     dataChannel.onmessage = (event) => {
         const message = event.data;
-        log("Mensaje recibido:", message);
+        log("📥 Mensaje recibido:", message);
     };
 
     //4. Configurar el evento onclose del canal de datos
     dataChannel.onclose = () => {
-        log("Canal de datos cerrado");
+        log("🔴 Canal de datos cerrado");
         // Deshabilitar el botón de envío cuando el canal se cierre
         document.getElementById("send").disabled = true;
     };
 
     //5. Configurar el evento oniceconnectionstatechange para manejar los cambios en el estado de conexión ICE
     peerConnection.oniceconnectionstatechange = (event) => {
-        log("Estado ICE:", peerConnection.iceConnectionState);
+        log("🧊 Estado ICE:", peerConnection.iceConnectionState);
 
     };
 
@@ -107,11 +107,11 @@ async function createPeerConnection() {
     remoteDataChannel = null;
     peerConnection.ondatachannel = (event) => {
 
-        log("Canal de datos recibido del otro extremo");
+        log("📡 Canal de datos recibido del otro extremo");
         remoteDataChannel = event.channel;
 
         remoteDataChannel.onmessage = (event) => {
-            log("Mensaje recibido en el canal de datos:", event.data);
+            log("💬 Mensaje recibido en el canal de datos:", event.data);
         };
     };
 }
@@ -121,19 +121,19 @@ async function negotiate() {
 
 
     try {
-        log("2. Se creará una oferta para iniciar la conexión WebRTC 🤝");
+        log("🤝 2. Se creará una oferta para iniciar la conexión WebRTC");
         const offer = await peerConnection.createOffer();
-        log("Oferta creada 📝:", offer);
+        log("📝 Oferta creada:", offer);
         await peerConnection.setLocalDescription(offer);
 
         // Promesa que espera a que los ICE candidates sean recolectados
         await new Promise((resolve) => {
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate === null) {
-                    log("Todos los ICE candidates han sido recolectados ✅");
+                    log("✅ Todos los ICE candidates han sido recolectados");
                     resolve();
                 } else {
-                    log("Nuevo ICE candidate 🥇:", event.candidate);
+                    log("🥇 Nuevo ICE candidate:", event.candidate);
                 }
             };
         });
@@ -147,17 +147,17 @@ async function negotiate() {
             body: JSON.stringify({ sdp: peerConnection.localDescription.sdp, type: peerConnection.localDescription.type })
         });
 
-        log("Oferta enviada al servidor, esperando respuesta... ⏳📡");
+        log("⏳ Oferta enviada al servidor, esperando respuesta...");
         const answer = await response.json();
-        log("Respuesta recibida del servidor 📬:", answer);
-        log("Configurando la descripción remota con la respuesta del servidor 📜");
+        log("📬 Respuesta recibida del servidor:", answer);
+        log("📜 Configurando la descripción remota con la respuesta del servidor");
         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 
-        log("Conexión WebRTC negociada con éxito 🎉");
+        log("🎉 Conexión WebRTC negociada con éxito");
 
 
     } catch (error) {
-        log("Error al negociar la conexión WebRTC 😢:", error);
+        log("❌ Error al negociar la conexión WebRTC:", error);
     }
 }
 
