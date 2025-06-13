@@ -35,7 +35,9 @@ async def send_periodic_messages(channel, peer_connection_id):
             else:
                 console.log(f"🔴 Canal cerrado para {peer_connection_id}, deteniendo mensajes automáticos")
                 # Si el canal está cerrado, se elimina al peer de la lista de conexiones activas
+                console.log(f"🗑️ Eliminando {peer_connection_id} de conexiones activas")
                 active_connections.discard(peer_connection_id)
+                console.log(f"📊 Conexiones activas: {len(active_connections)}")
                 break
                 
     except Exception as e:
@@ -67,16 +69,17 @@ async def offer(request):
 
     active_connections.add(peer_connection_id)
 
-    console.log(f"📊 Active connections: {len(active_connections)}")
-    console.log(f"🆔 Peer connection ID: {peer_connection_id}")
+    console.log(f"📊 Conexiones activas: {len(active_connections)}")
+    console.log(f"🆔 ID de conexión peer: {peer_connection_id}")
 
-    console.log(f"🔗 New connection established: {peer_connection_id}")
-    console.log(f"📄 SDP Offer: {offer_sdp.sdp}")
-    # Log the offer SDP to check for ICE candidates
+    console.log(f"🔗 Nueva conexión establecida: {peer_connection_id}")
+    console.log(f"📄 Oferta SDP:\n{offer_sdp.sdp}")
+    
+    # Log la oferta SDP para revisar candidatos ICE
     if 'a=candidate' in offer_sdp.sdp:
-        console.log("✅ Offer SDP contains ICE candidates.")
+        console.log("✅ La oferta SDP contiene candidatos ICE.")
     else:
-        console.log("❌ Offer SDP does NOT contain ICE candidates.")
+        console.log("❌ La oferta SDP NO contiene candidatos ICE.")
 
     # Canal para la comunicación bidireccional de datos
     data_channel = peer_connection.createDataChannel("chat")
@@ -84,9 +87,10 @@ async def offer(request):
     # Este evento se dispara cuando se crea un canal de datos
     @peer_connection.on('datachannel')
     def on_data_channel(channel):
-        console.log(f"📡 Data channel created: {channel.label}")
+        console.log(f"📡 Canal de datos creado: {channel.label}")
         # Se manda el primer mensaje al canal de datos
         channel.send("🎉 ¡Hola desde el servidor! La conexión bidireccional está establecida.")
+        channel.send(f"🆔 ID de conexión: {peer_connection_id}")
         
         # Iniciar mensajes automáticos cada 30 segundos
         asyncio.create_task(send_periodic_messages(channel, peer_connection_id))
@@ -95,24 +99,28 @@ async def offer(request):
         # Este evento se dispara cuando se recibe un mensaje en el canal de datos
         @channel.on('message')
         def on_message(message):
-            console.log(f"📩 Message received: {message}")
+            console.log(f"📩 Mensaje recibido: {message}")
             # Se manda una respuesta al cliente
-            channel.send(f"📢 Echo desde servidor: {message}")
+            channel.send(f"📢 Eco desde el servidor: {message}")
 
         # Este evento se dispara cuando el canal de datos se cierra
         @data_channel.on('close')
         def on_data_channel_close():
-            console.log("🔴 Data channel closed")
+            console.log("🔴 Canal de datos cerrado")
+            # Se elimina al peer de la lista de conexiones activas
+            console.log(f"🗑️ Eliminando {peer_connection_id} de conexiones activas")
+            active_connections.discard(peer_connection_id)
+            console.log(f"📊 Conexiones activas: {len(active_connections)}")
 
     # Eventos para manejar el estado de la conexión
     @peer_connection.on('connectionstatechange')
     def on_connection_state_change():
-        console.log(f"🔄 Connection state changed: {peer_connection.connectionState}")
+        console.log(f"🔄 Estado de la conexión cambiado: {peer_connection.connectionState}")
 
     # Este evento se dispara cuando se recibe una pista de medios. Puede ser audio, video, etc.
     @peer_connection.on('track')
     def on_track(track):
-        console.log(f"🎵 Track received: {track.kind}")
+        console.log(f"🎵 Pista recibida: {track.kind}")
 
     # Se establece la descripción remota. Es decir, la oferta SDP que se recibe del cliente.
     await peer_connection.setRemoteDescription(offer_sdp)
@@ -121,7 +129,7 @@ async def offer(request):
     # Y se establece la descripción local con la respuesta SDP.
     await peer_connection.setLocalDescription(answer)
 
-    console.log(f"📝 SDP Answer: {peer_connection.localDescription.sdp}")
+    console.log(f"📝 Respuesta SDP: {peer_connection.localDescription.sdp}")
     
     # La respuesta se envía al cliente con la SDP generada
     return web.Response(

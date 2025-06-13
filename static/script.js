@@ -2,6 +2,27 @@
 var peerConnection = null;
 var remoteDataChannel = null;
 
+var connectionId = null;
+
+// Función para mostrar el badge del ID de conexión
+function showConnectionBadge(id) {
+    connectionId = id;
+
+    // Remover badge existente si existe
+    const existingBadge = document.getElementById("connection-badge");
+    if (existingBadge) {
+        existingBadge.remove();
+    }
+
+    // Crear el badge
+    const badge = document.createElement("div");
+    badge.id = "connection-badge";
+    badge.innerHTML = `🆔 ${id}`;
+
+    // Añadir el badge al body para que sea flotante
+    document.body.appendChild(badge);
+}
+
 
 // Función de log para pintar en consola los mensajes bonitos ✨
 function log(message, object) {
@@ -95,11 +116,18 @@ async function createPeerConnection() {
         // Distinguir entre diferentes tipos de mensajes del servidor
         if (message.includes("🤖 Mensaje automático")) {
             log("🕐 Mensaje automático del servidor:", message);
-        } else if (message.includes("� Echo desde servidor")) {
-            log("🔄 Echo del servidor:", message);
+        } else if (message.includes("📢 Echo desde servidor")) {
+            log("📢 Echo del servidor:", message);
         } else if (message.includes("🎉")) {
             log("👋 Mensaje de bienvenida:", message);
-        } else {
+        }
+        else if (message.includes("🆔")) {
+            log("🆔 ID de conexión recibido:", message);
+            // Si el mensaje contiene un ID de conexión, mostrar el badge
+            const connectionId = message.split("🆔 ")[1];
+            showConnectionBadge(connectionId);
+        }
+        else {
             log("📥 Mensaje recibido:", message);
         }
     };

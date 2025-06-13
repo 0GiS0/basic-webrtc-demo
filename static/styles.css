@@ -32,6 +32,7 @@ h1 {
     overflow-y: auto;
     font-size: 1em;
     border: 1px solid #f0f0f0;
+    position: relative;
 }
 
 #message {
@@ -159,4 +160,45 @@ input[type="text"]::placeholder {
 
 #log::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+/* Badge del ID de conexión */
+#connection-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #007AFF, #0056D6);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    font-family: 'SF Mono', Monaco, monospace;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    animation: badgeSlideIn 0.5s ease-out;
+}
+
+#connection-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    background: linear-gradient(135deg, #0056D6, #003d99);
+}
+
+/* Animación de entrada del badge */
+@keyframes badgeSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.8);
+    }
+    50% {
+        transform: translateY(5px) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
