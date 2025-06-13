@@ -71,23 +71,37 @@ async function createPeerConnection() {
 
     peerConnection = new RTCPeerConnection({
         iceServers: [
-            { urls: "stun:stun.l.google.com:19302" }
+            { urls: "stun:stun.l.google.com:19302" } // Esto nos permite usar un servidor STUN público de Google. 
+                                                    // El servidor STUN ayuda a los navegadores a descubrir su dirección IP pública y el puerto que deben usar para comunicarse entre sí.
         ]
     });
 
-    dataChannel = peerConnection.createDataChannel("chat");
+    log("🔗 Conexión RTCPeerConnection creada:", peerConnection);
 
-    //2. Configurar el evento onopen del canal de datos
+    // Crear el canal de datos para enviar mensajes
+    log("📡 Creando canal de datos para enviar mensajes");
+    dataChannel = peerConnection.createDataChannel("chat"); 
+
+    // Se configura el evento onopen del canal de datos
     dataChannel.onopen = () => {
         log("🟢 Canal de datos abierto");
         // Habilitar el botón de envío cuando el canal esté abierto
         document.getElementById("send").disabled = false;
     };
 
-    //3. Configurar el evento onmessage del canal de datos
+    // Se configurar el evento onmessage del canal de datos
     dataChannel.onmessage = (event) => {
         const message = event.data;
-        log("📥 Mensaje recibido:", message);
+        // Distinguir entre diferentes tipos de mensajes del servidor
+        if (message.includes("🤖 Mensaje automático")) {
+            log("🕐 Mensaje automático del servidor:", message);
+        } else if (message.includes("� Echo desde servidor")) {
+            log("🔄 Echo del servidor:", message);
+        } else if (message.includes("🎉")) {
+            log("👋 Mensaje de bienvenida:", message);
+        } else {
+            log("�📥 Mensaje recibido:", message);
+        }
     };
 
     //4. Configurar el evento onclose del canal de datos
@@ -111,7 +125,17 @@ async function createPeerConnection() {
         remoteDataChannel = event.channel;
 
         remoteDataChannel.onmessage = (event) => {
-            log("💬 Mensaje recibido en el canal de datos:", event.data);
+            const message = event.data;
+            // Distinguir entre diferentes tipos de mensajes del servidor
+            if (message.includes("🤖 Mensaje automático")) {
+                log("� Mensaje automático del servidor:", message);
+            } else if (message.includes("📢 Echo desde servidor")) {
+                log("🔄 Echo del servidor:", message);
+            } else if (message.includes("🎉")) {
+                log("👋 Mensaje de bienvenida:", message);
+            } else {
+                log("💬 Mensaje recibido del servidor:", message);
+            }
         };
     };
 }

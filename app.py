@@ -1,4 +1,6 @@
 import ssl
+import asyncio
+import datetime
 from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from rich.console import Console
@@ -15,6 +17,27 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # Diccionario para almacenar conexiones activas
 active_connections = set()
+
+# Función para enviar mensajes periódicos
+async def send_periodic_messages(channel, peer_connection_id):
+    """Envía mensajes automáticos cada 30 segundos para demostrar comunicación bidireccional"""
+    count = 1
+    try:
+        while True:
+            await asyncio.sleep(30)  # Esperar 30 segundos
+            
+            if channel.readyState == 'open':
+                timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+                message = f"🤖 Mensaje automático #{count} desde el servidor - {timestamp}"
+                channel.send(message)
+                console.log(f"🕐 Mensaje automático enviado a {peer_connection_id}: {message}")
+                count += 1
+            else:
+                console.log(f"🔴 Canal cerrado para {peer_connection_id}, deteniendo mensajes automáticos")
+                break
+                
+    except Exception as e:
+        console.log(f"❌ Error enviando mensajes automáticos para {peer_connection_id}: {e}")
 
 
 async def home(request):
@@ -61,14 +84,18 @@ async def offer(request):
     def on_data_channel(channel):
         console.log(f"📡 Data channel created: {channel.label}")
         # Se manda el primer mensaje al canal de datos
-        channel.send("Hello from server!")
+        channel.send("🎉 ¡Hola desde el servidor! La conexión bidireccional está establecida.")
+        
+        # Iniciar mensajes automáticos cada 30 segundos
+        asyncio.create_task(send_periodic_messages(channel, peer_connection_id))
+        console.log(f"⏰ Mensajes automáticos iniciados para {peer_connection_id}")
 
         # Este evento se dispara cuando se recibe un mensaje en el canal de datos
         @channel.on('message')
         def on_message(message):
             console.log(f"📩 Message received: {message}")
             # Se manda una respuesta al cliente
-            channel.send(f"Echo: {message}")
+            channel.send(f"📢 Echo desde servidor: {message}")
 
         # Este evento se dispara cuando el canal de datos se cierra
         @data_channel.on('close')
