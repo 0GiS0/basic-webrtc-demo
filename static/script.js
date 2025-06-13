@@ -45,7 +45,7 @@ document.getElementById("message").addEventListener("keypress", (event) => {
 
 async function createPeerConnection() {
     //1. Crear la conexión RTCPeerConnection y el canal de datos
-    log("Iniciando conexión WebRTC...");
+    log("1. Iniciando conexión WebRTC 🚀");
 
     peerConnection = new RTCPeerConnection({
         iceServers: [
@@ -99,19 +99,19 @@ async function negotiate() {
 
 
     try {
-        log("Se creará una oferta para iniciar la conexión WebRTC");
+        log("2. Se creará una oferta para iniciar la conexión WebRTC 🤝");
         const offer = await peerConnection.createOffer();
-        log("Oferta creada:", offer);
+        log("Oferta creada 📝:", offer);
         await peerConnection.setLocalDescription(offer);
 
         // Promesa que espera a que los ICE candidates sean recolectados
         await new Promise((resolve) => {
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate === null) {
-                    log("Todos los ICE candidates han sido recolectados");
+                    log("Todos los ICE candidates han sido recolectados ✅");
                     resolve();
                 } else {
-                    log("Nuevo ICE candidate:", event.candidate);
+                    log("Nuevo ICE candidate 🥇:", event.candidate);
                 }
             };
         });
@@ -125,17 +125,17 @@ async function negotiate() {
             body: JSON.stringify({ sdp: peerConnection.localDescription.sdp, type: peerConnection.localDescription.type })
         });
 
-        log("Oferta enviada al servidor, esperando respuesta...");
+        log("Oferta enviada al servidor, esperando respuesta... ⏳📡");
         const answer = await response.json();
-        log("Respuesta recibida del servidor:", answer);
-        log("Configurando la descripción remota con la respuesta del servidor");
+        log("Respuesta recibida del servidor 📬:", answer);
+        log("Configurando la descripción remota con la respuesta del servidor 📜");
         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 
-        log("Conexión WebRTC negociada con éxito");
+        log("Conexión WebRTC negociada con éxito 🎉");
 
 
     } catch (error) {
-        log("Error al negociar la conexión WebRTC:", error);
+        log("Error al negociar la conexión WebRTC 😢:", error);
     }
 }
 
