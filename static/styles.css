@@ -88,3 +88,75 @@ input[type="text"]::placeholder {
     color: #999;
     opacity: 1;
 }
+
+/* Estilos para los logs bonitos */
+.log-entry {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-left: 3px solid #007AFF;
+    transition: background 0.2s ease;
+}
+
+.log-entry:hover {
+    background: #f0f3ff;
+}
+
+.log-timestamp {
+    font-size: 0.85em;
+    color: #666;
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+.log-message {
+    color: #333;
+    font-weight: 500;
+}
+
+.log-string {
+    color: #28a745;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.9em;
+    margin-left: 8px;
+}
+
+.log-value {
+    color: #dc3545;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.9em;
+    margin-left: 8px;
+}
+
+.log-object {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 8px 0 0 0;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 0.85em;
+    line-height: 1.4;
+    overflow-x: auto;
+    border: 1px solid #4a5568;
+}
+
+/* Scroll personalizado para el log */
+#log::-webkit-scrollbar {
+    width: 6px;
+}
+
+#log::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#log::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+#log::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

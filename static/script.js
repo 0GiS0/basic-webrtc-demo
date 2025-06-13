@@ -7,7 +7,29 @@ var remoteDataChannel = null;
 function log(message, object) {
     const logElement = document.getElementById("log");
     const timestamp = new Date().toLocaleTimeString();
-    logElement.innerHTML += `<p><strong>${timestamp}</strong>: ${message} ${object ? JSON.stringify(object) : ''}</p>`;
+    
+    let objectHtml = '';
+    if (object) {
+        if (typeof object === 'string') {
+            objectHtml = `<span class="log-string">"${object}"</span>`;
+        } else if (typeof object === 'object') {
+            objectHtml = `<pre class="log-object">${JSON.stringify(object, null, 2)}</pre>`;
+        } else {
+            objectHtml = `<span class="log-value">${object}</span>`;
+        }
+    }
+    
+    logElement.innerHTML += `
+        <div class="log-entry">
+            <span class="log-timestamp">${timestamp}</span>
+            <span class="log-message">${message}</span>
+            ${objectHtml}
+        </div>
+    `;
+    
+    // Auto-scroll al final
+    logElement.scrollTop = logElement.scrollHeight;
+    
     console.log(message, object);
 }
 
