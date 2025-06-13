@@ -1,6 +1,20 @@
 # Cómo funciona WebRTC 🚀
 
-¡Hola developer 👋🏻! En este repo quiero mostrarte de forma sencilla cómo funciona WebRTC en un escenario donde lo que queremos.
+¡Hola developer 👋🏻! En este repo quiero mostrarte de forma sencilla cómo funciona WebRTC con el ejemplo más básico: negociar una conexión y crear un canal de datos bidireccional como haríamos por ejemplo con WebSockets. El objetivo es que veas de forma clara cuáles son los pasos que se deben dar con el objetivo de que entiendas bien el proceso para luego seguir avanzando en escenarios
+más "complejos" como conectar dos navegadores entre sí, enviar audio y vídeo, etc.
+
+## ¿Qué es WebRTC? 🌐
+
+WebRTC (Web Real-Time Communication) es una tecnología que permite la comunicación en tiempo real entre navegadores web y aplicaciones móviles. Facilita la transmisión de audio, vídeo y datos directamente entre pares sin necesidad de un servidor intermediario.
+
+## ¿Cómo funciona? 🔄
+
+WebRTC utiliza un proceso de negociación entre dos pares para establecer una conexión directa. Este proceso incluye:
+1. **Intercambio de ofertas y respuestas (SDP)**: Los pares intercambian información sobre sus capacidades de medios y red.
+2. **Intercambio de candidatos ICE**: Los pares intercambian información sobre las direcciones IP y puertos que pueden utilizar para comunicarse.
+3. **Establecimiento de la conexión**: Una vez que ambos pares tienen la información necesaria, pueden establecer una conexión directa y comenzar a intercambiar datos.
+
+## ¿Qué necesitas para empezar? 🛠️
 
 Para ejecutar este proyecto necesitas tener instalado Python 3.9 o superior 🐍.
 
