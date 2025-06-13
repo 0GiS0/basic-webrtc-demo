@@ -20,7 +20,7 @@ h1 {
     letter-spacing: 0.5px;
 }
 
-#chat {
+#log {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -64,8 +64,20 @@ button {
     transition: background 0.2s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
     background: #0056D6;
+}
+
+/* Button disabled state */
+button:disabled {
+    background: #e0e0e0 !important;
+    color: #999 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+button:disabled:hover {
+    background: #e0e0e0 !important;
 }
 
 #send {
