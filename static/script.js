@@ -104,20 +104,20 @@ async function createPeerConnection() {
         }
     };
 
-    //4. Configurar el evento onclose del canal de datos
+    // Configurar el evento onclose del canal de datos
     dataChannel.onclose = () => {
         log("🔴 Canal de datos cerrado");
         // Deshabilitar el botón de envío cuando el canal se cierre
         document.getElementById("send").disabled = true;
     };
 
-    //5. Configurar el evento oniceconnectionstatechange para manejar los cambios en el estado de conexión ICE
+    // Configurar el evento oniceconnectionstatechange para manejar los cambios en el estado de conexión ICE
     peerConnection.oniceconnectionstatechange = (event) => {
         log("🧊 Estado ICE:", peerConnection.iceConnectionState);
 
     };
 
-    //6. Configurar el evento ondatachannel para recibir mensajes del otro extremo
+    // Configurar el evento ondatachannel para recibir mensajes del otro extremo
     remoteDataChannel = null;
     peerConnection.ondatachannel = (event) => {
 
@@ -140,7 +140,7 @@ async function createPeerConnection() {
     };
 }
 
-//7. Negociar la conexión WebRTC con el servidor
+// Negociar la conexión WebRTC con el servidor
 async function negotiate() {
 
 
@@ -151,6 +151,10 @@ async function negotiate() {
         await peerConnection.setLocalDescription(offer);
 
         // Promesa que espera a que los ICE candidates sean recolectados
+        // Esto es importante para asegurarse de que todos los candidatos ICE se hayan recolectado antes de enviar la oferta al servidor.
+        // Los ICE candidates son necesarios para establecer la conexión entre los pares.
+        // Pueden ser locales o remotos, y se utilizan para encontrar la mejor ruta de comunicación entre los pares.
+        log("⏳ Esperando a que se recolecten todos los ICE candidates...");
         await new Promise((resolve) => {
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate === null) {
@@ -175,6 +179,8 @@ async function negotiate() {
         const answer = await response.json();
         log("📬 Respuesta recibida del servidor:", answer);
         log("📜 Configurando la descripción remota con la respuesta del servidor");
+        // Esto lo qu hace es configurar la descripción remota de la conexión peer con la respuesta del servidor.
+        // El objetivo es establecer la conexión WebRTC entre los pares. Esta indica cómo nos comunicaremos con el otro extremo.
         await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
 
         log("🎉 Conexión WebRTC negociada con éxito");
