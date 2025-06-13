@@ -34,6 +34,8 @@ async def send_periodic_messages(channel, peer_connection_id):
                 count += 1
             else:
                 console.log(f"🔴 Canal cerrado para {peer_connection_id}, deteniendo mensajes automáticos")
+                # Si el canal está cerrado, se elimina al peer de la lista de conexiones activas
+                active_connections.discard(peer_connection_id)
                 break
                 
     except Exception as e:

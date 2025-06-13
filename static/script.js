@@ -7,7 +7,7 @@ var remoteDataChannel = null;
 function log(message, object) {
     const logElement = document.getElementById("log");
     const timestamp = new Date().toLocaleTimeString();
-    
+
     let objectHtml = '';
     if (object) {
         if (typeof object === 'string') {
@@ -18,7 +18,7 @@ function log(message, object) {
             objectHtml = `<span class="log-value">${object}</span>`;
         }
     }
-    
+
     logElement.innerHTML += `
         <div class="log-entry">
             <span class="log-timestamp">${timestamp}</span>
@@ -26,10 +26,10 @@ function log(message, object) {
             ${objectHtml}
         </div>
     `;
-    
+
     // Auto-scroll al final
     logElement.scrollTop = logElement.scrollHeight;
-    
+
     console.log(message, object);
 }
 
@@ -67,20 +67,20 @@ document.getElementById("message").addEventListener("keypress", (event) => {
 
 async function createPeerConnection() {
     //1. Crear la conexión RTCPeerConnection y el canal de datos
-    log("🚀 1. Iniciando conexión WebRTC");
+    log("🚀 Iniciando conexión WebRTC");
 
     peerConnection = new RTCPeerConnection({
         iceServers: [
             { urls: "stun:stun.l.google.com:19302" } // Esto nos permite usar un servidor STUN público de Google. 
-                                                    // El servidor STUN ayuda a los navegadores a descubrir su dirección IP pública y el puerto que deben usar para comunicarse entre sí.
+            // El servidor STUN ayuda a los navegadores a descubrir su dirección IP pública y el puerto que deben usar para comunicarse entre sí.
         ]
     });
 
-    log("🔗 Conexión RTCPeerConnection creada:", peerConnection);
+    log("🔗 Conexión RTCPeerConnection creada");
 
     // Crear el canal de datos para enviar mensajes
     log("📡 Creando canal de datos para enviar mensajes");
-    dataChannel = peerConnection.createDataChannel("chat"); 
+    dataChannel = peerConnection.createDataChannel("chat");
 
     // Se configura el evento onopen del canal de datos
     dataChannel.onopen = () => {
@@ -100,7 +100,7 @@ async function createPeerConnection() {
         } else if (message.includes("🎉")) {
             log("👋 Mensaje de bienvenida:", message);
         } else {
-            log("�📥 Mensaje recibido:", message);
+            log("📥 Mensaje recibido:", message);
         }
     };
 
@@ -145,7 +145,7 @@ async function negotiate() {
 
 
     try {
-        log("🤝 2. Se creará una oferta para iniciar la conexión WebRTC");
+        log("🤝 Se creará una oferta para iniciar la conexión WebRTC");
         const offer = await peerConnection.createOffer();
         log("📝 Oferta creada:", offer);
         await peerConnection.setLocalDescription(offer);
@@ -161,7 +161,7 @@ async function negotiate() {
                     log("✅ Todos los ICE candidates han sido recolectados");
                     resolve();
                 } else {
-                    log("🥇 Nuevo ICE candidate:", event.candidate);
+                    log(`🥇 Nuevo ICE candidate de tipo: ${event.candidate.type}`, event.candidate);
                 }
             };
         });
