@@ -1,6 +1,7 @@
 import ssl
 import asyncio
 import datetime
+import socket
 from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from rich.console import Console
@@ -137,6 +138,20 @@ async def offer(request):
             text=json.dumps({"sdp": peer_connection.localDescription.sdp, "type": peer_connection.localDescription.type}),
         )
 
+# Función para obtener la IP de la red privada
+def get_private_ip():
+    """Obtiene la IP de la red privada para conexiones desde otros equipos"""
+    try:
+        # Crear un socket temporal para obtener la IP local
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            # Conectar a una dirección remota (no necesita estar accesible)
+            s.connect(("8.8.8.8", 80))
+            private_ip = s.getsockname()[0]
+            return private_ip
+    except Exception as e:
+        console.log(f"❌ Error obteniendo IP privada: {e}")
+        return "No disponible"
+
 ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 ssl_context.load_cert_chain(certfile='cert.pem', keyfile='key.pem')
 
@@ -146,4 +161,22 @@ app.router.add_post('/offer', offer)
 
 
 if __name__ == '__main__':
-    web.run_app(app, host='localhost', port=5000, ssl_context=ssl_context)
+    # Obtener la IP de la red privada
+    private_ip = get_private_ip()
+    port = 8000
+    
+    console.log("🚀 Iniciando servidor WebRTC...")
+    console.log("=" * 60)
+    console.log("📡 URLs de acceso:")
+    console.log(f"🏠 Local:        https://localhost:{port}")
+    console.log(f"🌐 Red privada:  https://{private_ip}:{port}")
+    console.log("=" * 60)
+    console.log("📝 Nota: Para conectar desde otro equipo, usa la URL de red privada")
+    console.log("🔒 Asegúrate de que el certificado SSL sea aceptado en el navegador")
+    console.log("🔥 Si tienes problemas de acceso, verifica:")
+    console.log("   • Firewall del sistema (puerto 8000 abierto)")
+    console.log("   • Ambos dispositivos en la misma red WiFi")
+    console.log("   • Acepta el certificado SSL 'inseguro' en el navegador")
+    console.log("=" * 60)
+    
+    web.run_app(app, host='0.0.0.0', port=port, ssl_context=ssl_context)
