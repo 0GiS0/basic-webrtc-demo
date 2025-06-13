@@ -6,8 +6,9 @@ from aiohttp import web
 import os
 import json
 
-
+# Crea la aplicación web con aiohttp
 app = web.Application()
+# Configura la consola para imprimir mensajes
 console = Console()
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +18,7 @@ active_connections = set()
 
 
 async def home(request):
-    """Serve the main HTML page."""
+    """Para servir la página HTML principal"""
     return web.FileResponse('static/index.html')
 
 
@@ -25,15 +26,12 @@ async def offer(request):
     """
     Maneja la señalización WebRTC para establecer una conexión con un cliente.
     Recibe una oferta SDP del cliente, crea un RTCPeerConnection, y devuelve una respuesta SDP.
-    Registra estadísticas de conexión y maneja la grabación de medios.
-    Si se habilita la grabación, guarda los medios en un archivo con un nombre basado en el ID de conexión.
-    También maneja canales de datos y monitorea la calidad del audio y video.
     """
     
     # Recupera los parametros de la solicitud
     params = await request.json()
-    
-    offer_sdfp = RTCSessionDescription(
+
+    offer_sdp = RTCSessionDescription(
         sdp=params['sdp'],
         type=params['type']
     )
@@ -44,48 +42,59 @@ async def offer(request):
 
     active_connections.add(peer_connection_id)
 
-    console.log(f"Active connections: {len(active_connections)}")
-    console.log(f"Peer connection ID: {peer_connection_id}")
+    console.log(f"📊 Active connections: {len(active_connections)}")
+    console.log(f"🆔 Peer connection ID: {peer_connection_id}")
 
-    console.log(f"New connection established: {peer_connection_id}")
-    console.log(f"SDP Offer: {offer_sdfp.sdp}")
+    console.log(f"🔗 New connection established: {peer_connection_id}")
+    console.log(f"📄 SDP Offer: {offer_sdp.sdp}")
     # Log the offer SDP to check for ICE candidates
-    if 'a=candidate' in offer_sdfp.sdp:
-        console.log("Offer SDP contains ICE candidates.")
+    if 'a=candidate' in offer_sdp.sdp:
+        console.log("✅ Offer SDP contains ICE candidates.")
     else:
-        console.log("Offer SDP does NOT contain ICE candidates.")
+        console.log("❌ Offer SDP does NOT contain ICE candidates.")
 
     # Canal para la comunicación bidireccional de datos
     data_channel = peer_connection.createDataChannel("chat")
 
+    # Este evento se dispara cuando se crea un canal de datos
     @peer_connection.on('datachannel')
     def on_data_channel(channel):
-        console.log(f"Data channel created: {channel.label}")
+        console.log(f"📡 Data channel created: {channel.label}")
+        # Se manda el primer mensaje al canal de datos
         channel.send("Hello from server!")
 
+        # Este evento se dispara cuando se recibe un mensaje en el canal de datos
         @channel.on('message')
         def on_message(message):
-            console.log(f"Message received: {message}")
+            console.log(f"📩 Message received: {message}")
+            # Se manda una respuesta al cliente
+            channel.send(f"Echo: {message}")
 
+        # Este evento se dispara cuando el canal de datos se cierra
         @data_channel.on('close')
         def on_data_channel_close():
-            console.log("Data channel closed")
+            console.log("🔴 Data channel closed")
 
+    # Eventos para manejar el estado de la conexión
     @peer_connection.on('connectionstatechange')
     def on_connection_state_change():
-        console.log(f"Connection state changed: {peer_connection.connectionState}")
+        console.log(f"🔄 Connection state changed: {peer_connection.connectionState}")
 
+    # Este evento se dispara cuando se recibe una pista de medios. Puede ser audio, video, etc.
     @peer_connection.on('track')
     def on_track(track):
-        console.log(f"Track received: {track.kind}")
+        console.log(f"🎵 Track received: {track.kind}")
 
-   
-    await peer_connection.setRemoteDescription(offer_sdfp)
+    # Se establece la descripción remota. Es decir, la oferta SDP que se recibe del cliente.
+    await peer_connection.setRemoteDescription(offer_sdp)
+    # Se crea una respuesta SDP (SDP Answer) para enviar de vuelta al cliente.
     answer = await peer_connection.createAnswer()
+    # Y se establece la descripción local con la respuesta SDP.
     await peer_connection.setLocalDescription(answer)
 
-    console.log(f"SDP Answer: {peer_connection.localDescription.sdp}")
+    console.log(f"📝 SDP Answer: {peer_connection.localDescription.sdp}")
     
+    # La respuesta se envía al cliente con la SDP generada
     return web.Response(
             content_type="application/json",
             text=json.dumps({"sdp": peer_connection.localDescription.sdp, "type": peer_connection.localDescription.type}),
