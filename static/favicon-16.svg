@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Fondo circular azul -->
+  <circle cx="8" cy="8" r="7.5" fill="#007AFF"/>
+  
+  <!-- Burbuja de chat simple -->
+  <path d="M4 5 C4 4, 4.5 3.5, 5 3.5 L11 3.5 C11.5 3.5, 12 4, 12 5 L12 8.5 C12 9, 11.5 9.5, 11 9.5 L7 9.5 L5 11.5 L5 9.5 C4.5 9.5, 4 9, 4 8.5 Z" fill="white"/>
+  
+  <!-- Puntos de chat -->
+  <circle cx="6.5" cy="6.5" r="0.7" fill="#007AFF"/>
+  <circle cx="8" cy="6.5" r="0.7" fill="#007AFF"/>
+  <circle cx="9.5" cy="6.5" r="0.7" fill="#007AFF"/>
+</svg>
