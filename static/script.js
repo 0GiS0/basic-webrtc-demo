@@ -57,7 +57,7 @@ function log(message, object) {
 
 // Función para enviar mensajes a través del canal de datos
 function sendMessage(message) {
-    const channel = dataChannel || remoteDataChannel;
+    const channel = dataChannel;
     const sendButton = document.getElementById("send");
 
     if (channel && channel.readyState === 'open' && !sendButton.disabled) {
