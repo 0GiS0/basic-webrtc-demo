@@ -1,6 +1,6 @@
 // Variables globales para almacenar el canal de datos y la conexión peer
 var peerConnection = null;
-var remoteDataChannel = null;
+var dataChannel = null;
 
 var connectionId = null;
 
@@ -143,29 +143,7 @@ async function createPeerConnection() {
     peerConnection.oniceconnectionstatechange = (event) => {
         log("🧊 Estado ICE:", peerConnection.iceConnectionState);
 
-    };
-
-    // Configurar el evento ondatachannel para recibir mensajes del otro extremo
-    remoteDataChannel = null;
-    peerConnection.ondatachannel = (event) => {
-
-        log("📡 Canal de datos recibido del otro extremo");
-        remoteDataChannel = event.channel;
-
-        remoteDataChannel.onmessage = (event) => {
-            const message = event.data;
-            // Distinguir entre diferentes tipos de mensajes del servidor
-            if (message.includes("🤖 Mensaje automático")) {
-                log("� Mensaje automático del servidor:", message);
-            } else if (message.includes("📢 Echo desde servidor")) {
-                log("🔄 Echo del servidor:", message);
-            } else if (message.includes("🎉")) {
-                log("👋 Mensaje de bienvenida:", message);
-            } else {
-                log("💬 Mensaje recibido del servidor:", message);
-            }
-        };
-    };
+    };    
 }
 
 // Negociar la conexión WebRTC con el servidor
