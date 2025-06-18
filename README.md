@@ -1,7 +1,9 @@
-# Cómo funciona WebRTC 🚀
+# Cómo empezar con WebRTC 💿🤳🏼🔊 | Cap. 1
 
-¡Hola developer 👋🏻! En este repo quiero mostrarte de forma sencilla cómo funciona WebRTC con el ejemplo más básico: negociar una conexión y crear un canal de datos bidireccional como haríamos por ejemplo con WebSockets. El objetivo es que veas de forma clara cuáles son los pasos que se deben dar con el objetivo de que entiendas bien el proceso para luego seguir avanzando en escenarios
-más "complejos" como conectar dos navegadores entre sí, enviar audio y vídeo, etc.
+¡Hola developer 👋🏻! En este repo quiero mostrarte de forma sencilla cómo funciona WebRTC con el ejemplo más básico: negociar una conexión y crear un canal de datos bidireccional como haríamos por ejemplo con WebSockets. El objetivo es que veas de forma clara cuáles son los pasos que se deben dar con el objetivo de que entiendas bien el proceso para luego seguir avanzando en escenarios más "complejos" como enviar audio y vídeo, conectar dos navegadores entre sí, etc. Este repo forma parte de mi vídeo de mi canal de YouTube [Cómo empezar con WebRTC 💿🤳🏼🔊 | Cap. 1](https://youtu.be/cOeZycrQS6s)
+
+[![Cómo empezar con WebRTC](https://github.com/user-attachments/assets/eb109575-84ed-4872-94a1-5a142a432fc6)](https://youtu.be/cOeZycrQS6s)
+
 
 ## ¿Qué es WebRTC? 🌐
 
